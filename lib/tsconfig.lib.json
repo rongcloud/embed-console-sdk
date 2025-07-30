@@ -1,0 +1,14 @@
+{
+    // "extends": "@vue/tsconfig/tsconfig.dom.json",
+    "files": ["./src/embed.ts"],
+    "compilerOptions": {
+        "target": "ES2017",
+        "lib": ["ES2017", "DOM"],
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "declarationDir": "../package/types",
+        "skipLibCheck": true
+    }
+}
