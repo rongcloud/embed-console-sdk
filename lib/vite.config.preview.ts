@@ -5,7 +5,7 @@ const base = process.env.NODE_ENV === 'production' ? 'https://rongcloud.github.i
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  base: '/',
+  base,
   build: {
     outDir: '../docs',
   }
