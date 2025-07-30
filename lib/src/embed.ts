@@ -40,7 +40,6 @@ interface IframeMessage {
 interface InstanceInfo {
   instanceId: string;
   containerId: string;
-  code: string;
   isInitialized: boolean;
   initTime: number | null;
   eventListenerCount: number;
@@ -48,7 +47,7 @@ interface InstanceInfo {
 
 interface RC {
   EVENTS: RCEvents;
-  init: (containerId: string, code: string, accessToken: string) => Promise<RCInstance>;
+  init: (containerId:string, accessToken: string) => Promise<RCInstance>;
   getAllInstances: () => Record<string, RCInstance>;
   getInstance: (instanceId: string) => RCInstance | null;
   destroyAll: () => void;
@@ -74,7 +73,6 @@ interface RC {
   class RCInstance {
     public readonly instanceId: string;
     public readonly containerId: string;
-    public readonly code: string;
     public readonly accessToken: string;
     private container: HTMLElement | null = null;
     private eventListeners: Record<string, EventListener[]> = {};
@@ -83,13 +81,12 @@ interface RC {
     public iframe: HTMLIFrameElement | null = null;
     private messageHandler: ((event: MessageEvent) => void) | null = null;
 
-    constructor(containerId: string, code: string, accessToken: string) {
+    constructor(containerId: string,  accessToken: string) {
       this.containerId = containerId;
-      this.code = code;
       this.accessToken = accessToken;
       this.instanceId = this.generateInstanceId();
 
-      console.log(`RC 实例创建 [${this.instanceId}]:`, { containerId, code });
+      console.log(`RC 实例创建 [${this.instanceId}]:`, { containerId });
     }
 
     /**
@@ -315,7 +312,6 @@ interface RC {
       return {
         instanceId: this.instanceId,
         containerId: this.containerId,
-        code: this.code,
         isInitialized: this.isInitialized,
         initTime: this.initTime,
         eventListenerCount: Object.keys(this.eventListeners).length
@@ -424,8 +420,8 @@ interface RC {
     /**
      * 初始化 RC 实例
      */
-    init: async function(containerId: string, code: string, accessToken: string): Promise<RCInstance> {
-      const instance = new RCInstance(containerId, code, accessToken);
+    init: async function(containerId: string,  accessToken: string): Promise<RCInstance> {
+      const instance = new RCInstance(containerId, accessToken);
 
       // 保存到全局实例管理器
       RC_INSTANCES[instance.instanceId] = instance;

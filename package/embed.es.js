@@ -1,4 +1,4 @@
-const s = {
+const i = {
   EXPIRED: "expired",
   // Token 过期事件
   // CODE_ERROR: 'codeError',      // Code 错误事件
@@ -12,7 +12,6 @@ const s = {
 class f {
   instanceId;
   containerId;
-  code;
   accessToken;
   container = null;
   eventListeners = {};
@@ -20,8 +19,8 @@ class f {
   initTime = null;
   iframe = null;
   messageHandler = null;
-  constructor(e, t, n) {
-    this.containerId = e, this.code = t, this.accessToken = n, this.instanceId = this.generateInstanceId(), console.log(`RC 实例创建 [${this.instanceId}]:`, { containerId: e, code: t });
+  constructor(e, t) {
+    this.containerId = e, this.accessToken = t, this.instanceId = this.generateInstanceId(), console.log(`RC 实例创建 [${this.instanceId}]:`, { containerId: e });
   }
   /**
    * 生成唯一实例 ID
@@ -32,27 +31,27 @@ class f {
   /**
    * 创建事件对象
    */
-  createEvent(e, t, n = null, r = null) {
+  createEvent(e, t, s = null, o = null) {
     return {
       type: e,
       message: t,
-      code: n,
+      code: s,
       timestamp: Date.now(),
       instanceId: this.instanceId,
-      data: r
+      data: o
     };
   }
   /**
    * 触发事件
    */
-  emitEvent(e, t, n = null, r = null) {
-    const o = this.eventListeners[e];
-    if (!o || o.length === 0)
+  emitEvent(e, t, s = null, o = null) {
+    const a = this.eventListeners[e];
+    if (!a || a.length === 0)
       return;
-    const l = this.createEvent(e, t, n, r);
-    o.forEach((c, d) => {
+    const l = this.createEvent(e, t, s, o);
+    a.forEach((c, d) => {
       try {
-        c.handler(l), c.once && o.splice(d, 1);
+        c.handler(l), c.once && a.splice(d, 1);
       } catch (I) {
         console.error(`RC[${this.instanceId}] 事件处理器执行错误 [${e}]:`, I);
       }
@@ -63,7 +62,7 @@ class f {
    */
   createContainer(e) {
     const t = document.getElementById(e);
-    return t ? (t.innerHTML = "", t.style.position = "relative", t.style.overflow = "hidden", t.setAttribute("data-rc-instance", this.instanceId), t) : (this.emitEvent(s.INIT_ERROR, `找不到容器元素: ${e}`, "CONTAINER_NOT_FOUND"), null);
+    return t ? (t.innerHTML = "", t.style.position = "relative", t.style.overflow = "hidden", t.setAttribute("data-rc-instance", this.instanceId), t) : (this.emitEvent(i.INIT_ERROR, `找不到容器元素: ${e}`, "CONTAINER_NOT_FOUND"), null);
   }
   /**
    * 初始化组件
@@ -74,7 +73,7 @@ class f {
       const e = document.createElement("iframe");
       e.src = this.accessToken, e.style.width = "100%", e.style.height = "100%", e.style.border = "none", this.iframe = e, this.setupMessageListener(), this.container.appendChild(e), console.log(`RC[${this.instanceId}] 组件初始化成功`);
     } catch (e) {
-      throw this.emitEvent(s.INIT_ERROR, `组件初始化失败: ${e.message}`, "INIT_FAILED"), e;
+      throw this.emitEvent(i.INIT_ERROR, `组件初始化失败: ${e.message}`, "INIT_FAILED"), e;
     }
   }
   /**
@@ -83,12 +82,12 @@ class f {
   async start() {
     try {
       if (!this.containerId || typeof this.containerId != "string")
-        throw this.emitEvent(s.INIT_ERROR, "containerId 必须是非空字符串", "INVALID_CONTAINER_ID"), new Error("Invalid containerId");
+        throw this.emitEvent(i.INIT_ERROR, "containerId 必须是非空字符串", "INVALID_CONTAINER_ID"), new Error("Invalid containerId");
       if (this.container = this.createContainer(this.containerId), !this.container)
         throw new Error("Container creation failed");
       return await this.initializeComponent(), this;
     } catch (e) {
-      throw this.emitEvent(s.INIT_ERROR, `初始化异常: ${e.message}`, "INIT_EXCEPTION"), console.error(`RC[${this.instanceId}] 初始化失败:`, e), e;
+      throw this.emitEvent(i.INIT_ERROR, `初始化异常: ${e.message}`, "INIT_EXCEPTION"), console.error(`RC[${this.instanceId}] 初始化失败:`, e), e;
     }
   }
   /**
@@ -104,7 +103,7 @@ class f {
    */
   off(e, t) {
     return this.eventListeners[e] ? (t ? (this.eventListeners[e] = this.eventListeners[e].filter(
-      (n) => n.handler !== t
+      (s) => s.handler !== t
     ), this.eventListeners[e].length === 0 && delete this.eventListeners[e]) : delete this.eventListeners[e], this) : this;
   }
   /**
@@ -128,7 +127,6 @@ class f {
     return {
       instanceId: this.instanceId,
       containerId: this.containerId,
-      code: this.code,
       isInitialized: this.isInitialized,
       initTime: this.initTime,
       eventListenerCount: Object.keys(this.eventListeners).length
@@ -157,7 +155,7 @@ class f {
       const t = typeof e == "string" ? JSON.parse(e) : e;
       switch (console.log(`RC[${this.instanceId}] 收到iframe消息:`, t), t.type) {
         case "token-expired":
-          this.emitEvent(s.EXPIRED, t.message || "Token已过期", t.code, t.data);
+          this.emitEvent(i.EXPIRED, t.message || "Token已过期", t.code, t.data);
           break;
         // case 'auth-error':
         //   this.emitEvent(RC_EVENTS.AUTH_ERROR, message.message || '认证失败', message.code, message.data);
@@ -188,55 +186,55 @@ class f {
     this.iframe?.contentWindow && this.iframe.contentWindow.postMessage(e, "*");
   }
 }
-const a = window.RC_INSTANCES || {}, h = {
+const r = window.RC_INSTANCES || {}, h = {
   // 事件名常量
-  EVENTS: s,
+  EVENTS: i,
   /**
    * 初始化 RC 实例
    */
-  init: async function(i, e, t) {
-    const n = new f(i, e, t);
-    a[n.instanceId] = n;
+  init: async function(n, e) {
+    const t = new f(n, e);
+    r[t.instanceId] = t;
     try {
-      return await n.start(), n;
-    } catch (r) {
-      throw delete window.RC_INSTANCES[n.instanceId], r;
+      return await t.start(), t;
+    } catch (s) {
+      throw delete window.RC_INSTANCES[t.instanceId], s;
     }
   },
   /**
    * 获取所有实例
    */
   getAllInstances: function() {
-    return a || {};
+    return r || {};
   },
   /**
    * 根据 ID 获取实例
    */
-  getInstance: function(i) {
-    return a[i] || null;
+  getInstance: function(n) {
+    return r[n] || null;
   },
   /**
    * 销毁所有实例
    */
   destroyAll: function() {
-    Object.values(a || {}).forEach((i) => {
-      i.destroy();
+    Object.values(r || {}).forEach((n) => {
+      n.destroy();
     }), window.RC_INSTANCES = {};
   },
   /**
    * 获取所有可用的事件名
    */
   getEventNames: function() {
-    return Object.values(s);
+    return Object.values(i);
   },
   /**
    * 检查事件名是否有效
    */
-  isValidEvent: function(i) {
-    return Object.values(s).indexOf(i) !== -1;
+  isValidEvent: function(n) {
+    return Object.values(i).indexOf(n) !== -1;
   },
-  getUrl: function(i) {
-    const e = a[i];
+  getUrl: function(n) {
+    const e = r[n];
     return e && e.iframe?.src || "";
   }
 };

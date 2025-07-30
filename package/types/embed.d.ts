@@ -19,14 +19,13 @@ interface RCEvent {
 interface InstanceInfo {
     instanceId: string;
     containerId: string;
-    code: string;
     isInitialized: boolean;
     initTime: number | null;
     eventListenerCount: number;
 }
 interface RC {
     EVENTS: RCEvents;
-    init: (containerId: string, code: string, accessToken: string) => Promise<RCInstance>;
+    init: (containerId: string, accessToken: string) => Promise<RCInstance>;
     getAllInstances: () => Record<string, RCInstance>;
     getInstance: (instanceId: string) => RCInstance | null;
     destroyAll: () => void;
@@ -40,7 +39,6 @@ interface RC {
 declare class RCInstance {
     readonly instanceId: string;
     readonly containerId: string;
-    readonly code: string;
     readonly accessToken: string;
     private container;
     private eventListeners;
@@ -48,7 +46,7 @@ declare class RCInstance {
     private initTime;
     iframe: HTMLIFrameElement | null;
     private messageHandler;
-    constructor(containerId: string, code: string, accessToken: string);
+    constructor(containerId: string, accessToken: string);
     /**
      * 生成唯一实例 ID
      */
