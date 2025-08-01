@@ -9,7 +9,7 @@
     </a-modal>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { type FormInstance } from '@arco-design/web-vue'
 import RC from '../embed'
 
@@ -30,7 +30,13 @@ const handleClick = async () => {
     }
     return false
 }
-
+onMounted(() => {
+   const searchParams = new URLSearchParams(window.location.search)
+   const accessToken = searchParams.get('access_token')
+   if (accessToken) {
+    form.value.accessToken = accessToken
+   }
+})
 </script>
 <style scoped >
  #root {
