@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build && vite build --config vite.config.preview.ts && tsc --project tsconfig.lib.json",
+    "build": "vite build && vite build --config vite.config.preview.ts && tsc --project tsconfig.lib.json",
     "preview": "vite preview",
     "build:types": "tsc --project tsconfig.lib.json"
   },

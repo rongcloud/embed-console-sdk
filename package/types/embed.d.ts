@@ -25,13 +25,9 @@ interface InstanceInfo {
 }
 interface RC {
     EVENTS: RCEvents;
-    init: (containerId: string, accessToken: string) => Promise<RCInstance>;
-    getAllInstances: () => Record<string, RCInstance>;
-    getInstance: (instanceId: string) => RCInstance | null;
-    destroyAll: () => void;
+    init: (containerId: string, accessToken: string, showMenu: boolean) => RCInstance;
     getEventNames: () => string[];
-    isValidEvent: (eventName: string) => boolean;
-    getUrl: (instanceId: string) => string;
+    getInstance: (instanceId: string) => RCInstance | null;
 }
 /**
  * RC 实例类
@@ -46,7 +42,8 @@ declare class RCInstance {
     private initTime;
     iframe: HTMLIFrameElement | null;
     private messageHandler;
-    constructor(containerId: string, accessToken: string);
+    private showMenu;
+    constructor(containerId: string, accessToken: string, showMenu: boolean);
     /**
      * 生成唯一实例 ID
      */
@@ -70,19 +67,11 @@ declare class RCInstance {
     /**
      * 启动初始化流程
      */
-    start(): Promise<RCInstance>;
+    start(): RCInstance;
     /**
      * 监听事件
      */
     on(eventType: string, handler: (event: RCEvent) => void): RCInstance;
-    /**
-     * 移除事件监听器
-     */
-    off(eventType: string, handler?: (event: RCEvent) => void): RCInstance;
-    /**
-     * 一次性事件监听
-     */
-    once(eventType: string, handler: (event: RCEvent) => void): RCInstance;
     /**
      * 销毁实例
      */

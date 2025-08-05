@@ -47,13 +47,9 @@ interface InstanceInfo {
 
 interface RC {
   EVENTS: RCEvents;
-  init: (containerId:string, accessToken: string) => Promise<RCInstance>;
-  getAllInstances: () => Record<string, RCInstance>;
-  getInstance: (instanceId: string) => RCInstance | null;
-  destroyAll: () => void;
+  init: (containerId:string, accessToken: string, showMenu: boolean) => RCInstance;
   getEventNames: () => string[];
-  isValidEvent: (eventName: string) => boolean;
-  getUrl: (instanceId: string) => string;
+  getInstance: (instanceId: string) => RCInstance | null;
 }
 
   // 事件名常量定义
@@ -80,13 +76,13 @@ interface RC {
     private initTime: number | null = null;
     public iframe: HTMLIFrameElement | null = null;
     private messageHandler: ((event: MessageEvent) => void) | null = null;
+    private showMenu: boolean = false;
 
-    constructor(containerId: string,  accessToken: string) {
+    constructor(containerId: string,  accessToken: string, showMenu: boolean) {
       this.containerId = containerId;
       this.accessToken = accessToken;
       this.instanceId = this.generateInstanceId();
-
-      console.log(`RC 实例创建 [${this.instanceId}]:`, { containerId });
+      this.showMenu = showMenu;
     }
 
     /**
@@ -160,14 +156,14 @@ interface RC {
     /**
      * 初始化组件
      */
-    private async initializeComponent(): Promise<void> {
+    private initializeComponent(): void {
       try {
         this.isInitialized = true;
         this.initTime = Date.now();
 
         // 创建 iframe 容器
         const iframe = document.createElement('iframe');
-        iframe.src = this.accessToken;
+        iframe.src = this.accessToken + (this.showMenu ? '&show_menu=true' : '');
         iframe.style.width = '100%';
         iframe.style.height = '100%';
         iframe.style.border = 'none';
@@ -179,9 +175,6 @@ interface RC {
         this.setupMessageListener();
 
         this.container!.appendChild(iframe);
-
-        console.log(`RC[${this.instanceId}] 组件初始化成功`);
-
       } catch (error: any) {
         this.emitEvent(RC_EVENTS.INIT_ERROR, `组件初始化失败: ${error.message}`, 'INIT_FAILED');
         throw error;
@@ -191,7 +184,7 @@ interface RC {
     /**
      * 启动初始化流程
      */
-    public async start(): Promise<RCInstance> {
+    public start(): RCInstance {
       try {
         // 参数验证
         if (!this.containerId || typeof this.containerId !== 'string') {
@@ -205,7 +198,7 @@ interface RC {
         }
 
         // 初始化组件
-        await this.initializeComponent();
+        this.initializeComponent();
 
         return this;
 
@@ -231,46 +224,6 @@ interface RC {
       this.eventListeners[eventType].push({ handler, once: false });
       return this;
     }
-
-    /**
-     * 移除事件监听器
-     */
-    public off(eventType: string, handler?: (event: RCEvent) => void): RCInstance {
-      if (!this.eventListeners[eventType]) {
-        return this;
-      }
-
-      if (!handler) {
-        delete this.eventListeners[eventType];
-      } else {
-        this.eventListeners[eventType] = this.eventListeners[eventType].filter(
-          listener => listener.handler !== handler
-        );
-
-        if (this.eventListeners[eventType].length === 0) {
-          delete this.eventListeners[eventType];
-        }
-      }
-
-      return this;
-    }
-
-    /**
-     * 一次性事件监听
-     */
-    public once(eventType: string, handler: (event: RCEvent) => void): RCInstance {
-      if (typeof handler !== 'function') {
-        throw new Error('事件处理器必须是函数');
-      }
-
-      if (!this.eventListeners[eventType]) {
-        this.eventListeners[eventType] = [];
-      }
-
-      this.eventListeners[eventType].push({ handler, once: true });
-      return this;
-    }
-
     /**
      * 销毁实例
      */
@@ -324,30 +277,20 @@ interface RC {
     public isReady(): boolean {
       return this.isInitialized;
     }
-
-
     /**
      * 设置 postMessage 监听器
      */
     private setupMessageListener(): void {
       const messageHandler = (event: MessageEvent): void => {
-        // 安全检查：验证消息来源
-        // if (!this.isValidOrigin(event.origin)) {
-        //   console.warn(`RC[${this.instanceId}] 收到来自非法源的消息:`, event.origin);
-        //   return;
-        // }
-
-        // 验证消息是否来自当前iframe
-        if (event.source !== this.iframe?.contentWindow) {
-          return;
+        const whiteList = ['5173', 'embed-console.rongcloud']
+        if(!whiteList.some(item => event.origin.includes(item))){
+          return
         }
-
+        // console.log('event', event)
         this.handleIframeMessage(event.data);
       };
-
       // 添加消息监听器
       window.addEventListener('message', messageHandler);
-
       // 保存引用以便清理
       this.messageHandler = messageHandler;
     }
@@ -358,13 +301,11 @@ interface RC {
       try {
         // 解析消息数据
         const message: IframeMessage = typeof data === 'string' ? JSON.parse(data) : data;
-
-        console.log(`RC[${this.instanceId}] 收到iframe消息:`, message);
-
         // 根据消息类型触发相应事件
         switch (message.type) {
-          case 'token-expired':
-            this.emitEvent(RC_EVENTS.EXPIRED, message.message || 'Token已过期', message.code, message.data);
+          case RC_EVENTS.EXPIRED:
+            console.log('token expired')
+            this.emitEvent(RC_EVENTS.EXPIRED, message.message || 'Token已过期');
             break;
 
           // case 'auth-error':
@@ -390,8 +331,8 @@ interface RC {
             }
             break;
 
-          default:
-            console.log(`RC[${this.instanceId}] 未知消息类型:`, message.type);
+          // default:
+          //   console.log(`RC[${this.instanceId}] 未知消息类型:`, message.type);
         }
 
       } catch (error) {
@@ -420,14 +361,14 @@ interface RC {
     /**
      * 初始化 RC 实例
      */
-    init: async function(containerId: string,  accessToken: string): Promise<RCInstance> {
-      const instance = new RCInstance(containerId, accessToken);
+    init: function(containerId: string,  accessToken: string, showMenu = false): RCInstance {
+      const instance = new RCInstance(containerId, accessToken, showMenu);
 
       // 保存到全局实例管理器
       RC_INSTANCES[instance.instanceId] = instance;
 
       try {
-        await instance.start();
+        instance.start();
         return instance;
       } catch (error) {
         // 初始化失败时清理实例
@@ -435,62 +376,19 @@ interface RC {
         throw error;
       }
     },
-
-    /**
-     * 获取所有实例
-     */
-    getAllInstances: function(): Record<string, RCInstance> {
-      return RC_INSTANCES || {};
-    },
-
     /**
      * 根据 ID 获取实例
      */
     getInstance: function(instanceId: string): RCInstance | null {
       return RC_INSTANCES[instanceId] || null;
     },
-
-    /**
-     * 销毁所有实例
-     */
-    destroyAll: function(): void {
-      Object.values(RC_INSTANCES || {}).forEach(instance => {
-        instance.destroy();
-      });
-      window.RC_INSTANCES = {};
-    },
-
     /**
      * 获取所有可用的事件名
      */
     getEventNames: function(): string[] {
       return Object.values(RC_EVENTS);
-    },
-
-    /**
-     * 检查事件名是否有效
-     */
-    isValidEvent: function(eventName: string): boolean {
-      return Object.values(RC_EVENTS).indexOf(eventName) !== -1;
-    },
-    
-    getUrl: function(instanceId: string): string {
-      const instance = RC_INSTANCES[instanceId];
-      if(!instance) {
-        return '';
-      }
-      return instance.iframe?.src || '';
     }
   };
-
-
-  // 页面卸载时自动销毁所有实例
-  window.addEventListener('beforeunload', function() {
-    RC.destroyAll();
-  });
-
-  console.log('RC 组件库已加载完成 (实例化模式)');
-  console.log('可用事件:', RC.getEventNames());
 
 export default RC;
 

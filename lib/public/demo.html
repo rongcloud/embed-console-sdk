@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通过CDN引入</title>
+    <style>
+        #root {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<script src="https://cdn.ronghub.com/embed/console/embed.umd.js"></script>
+<body>
+    <div id="root"></div>
+    <script>
+        const token =  prompt('请输入token:')
+        if(!token){
+            location.reload()
+        }else {
+            const instance = RC.init('root', token);
+            instance.on(RC.EVENTS.EXPIRED, () => {
+                alert('token已过期,请重新输入token')
+            })
+        }
+    </script>
+</body>
+</html>

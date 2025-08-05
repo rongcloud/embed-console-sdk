@@ -14,7 +14,7 @@ import { type FormInstance } from '@arco-design/web-vue'
 import RC from '../embed'
 
 const instance = ref()
-const visible = ref(true)
+const visible = ref(false)
 const formRef = ref<FormInstance>()
 const form = ref({
     accessToken: ''
@@ -25,7 +25,12 @@ const rules = ref({
 const handleClick = async () => {
     console.log(await formRef.value?.validate())
     if ( !(await formRef.value?.validate())) {
-        instance.value = await RC.init('root', form.value.accessToken);
+        instance.value =  RC.init('root', form.value.accessToken, true);
+        // @ts-ignore
+        window.rc_instance = instance.value
+        instance.value.on(RC.EVENTS.EXPIRED, () => {
+            console.log('token expired')
+        })
         return true
     }
     return false
@@ -35,6 +40,9 @@ onMounted(() => {
    const accessToken = searchParams.get('access_token')
    if (accessToken) {
     form.value.accessToken = accessToken
+    handleClick()
+   }else {
+    visible.value = true
    }
 })
 </script>
