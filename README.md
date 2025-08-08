@@ -50,11 +50,12 @@ const instance = await RC.init(
 **参数：**
 - `containerId` (string): 容器元素的 ID
 - `accessToken` (string): 访问令牌 URL
+- `showMenu` (boolean): 是否显示菜单
 
 **返回：** `Promise<RCInstance>`
 
 ```javascript
-const instance = await RC.init('container', 'access token');
+const instance = await RC.init('container', 'access token', true);
 ```
 
 #### RC.getEventNames()

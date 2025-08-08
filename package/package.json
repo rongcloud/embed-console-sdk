@@ -1,6 +1,6 @@
 {
     "name": "@rongcloud/embed-console-sdk",
-    "version": "0.0.1-alpha.1",
+    "version": "0.0.1-alpha.2",
     "types": "./types/embed.d.ts",
     "main": "./embed.umd.js",
     "module": "./embed.es.js",
