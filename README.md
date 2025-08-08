@@ -100,3 +100,9 @@ instance.destory();
 
 支持现代浏览器，需要 ES6+ 和 postMessage API 支持。
 
+## 常见问题
+
+### Safari 浏览器 无法使用
+
+Safari 浏览器需要在设置 -> 隐私 ，关闭防止跨站跟踪
+
