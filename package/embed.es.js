@@ -70,9 +70,9 @@ class I {
    */
   initializeComponent() {
     try {
-      this.isInitialized = !0, this.initTime = Date.now();
+      this.isInitialized = !0, this.initTime = Date.now(), this.setupMessageListener();
       const e = document.createElement("iframe");
-      e.src = this.accessToken + (this.showMenu ? "&show_menu=true" : ""), e.style.width = "100%", e.style.height = "100%", e.style.border = "none", this.iframe = e, this.setupMessageListener(), this.container.appendChild(e);
+      e.src = this.accessToken + (this.showMenu ? "&show_menu=true" : ""), e.style.width = "100%", e.style.height = "100%", e.style.border = "none", this.iframe = e, this.container.appendChild(e);
     } catch (e) {
       throw this.emitEvent(i.INIT_ERROR, `组件初始化失败: ${e.message}`, "INIT_FAILED"), e;
     }

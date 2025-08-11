@@ -160,6 +160,8 @@ interface RC {
       try {
         this.isInitialized = true;
         this.initTime = Date.now();
+        // 添加 postMessage 监听器
+        this.setupMessageListener();
 
         // 创建 iframe 容器
         const iframe = document.createElement('iframe');
@@ -170,10 +172,6 @@ interface RC {
 
         // 保存iframe引用
         this.iframe = iframe;
-
-        // 添加 postMessage 监听器
-        this.setupMessageListener();
-
         this.container!.appendChild(iframe);
       } catch (error: any) {
         this.emitEvent(RC_EVENTS.INIT_ERROR, `组件初始化失败: ${error.message}`, 'INIT_FAILED');
