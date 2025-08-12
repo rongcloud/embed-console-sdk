@@ -55,7 +55,7 @@ const instance = await RC.init(
 **返回：** `Promise<RCInstance>`
 
 ```javascript
-const instance = await RC.init('container', 'access token', true);
+const instance = RC.init('container', 'access token', true);
 ```
 
 #### RC.getEventNames()
