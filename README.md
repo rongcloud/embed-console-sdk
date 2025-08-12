@@ -26,7 +26,7 @@ import RC from '@rongcloud/embed-console-sdk';
 
 ```javascript
 // 创建一个 RC 实例
-const instance = await RC.init(
+const instance =  RC.init(
   'my-container',        // 容器元素 ID
   'https://console.rongcloud.cn/...' // 访问令牌
 );
