@@ -6,11 +6,11 @@ declare global{
 }
 
 interface RCEvents {
-  EXPIRED: string;
+  EXPIRED: 'expired';
   // CODE_ERROR: string;
   // AUTH_ERROR: string;
   // NETWORK_ERROR: string;
-  INIT_ERROR: string;
+  INIT_ERROR: 'initError';
   // READY: string;
   // DESTROY: string;
 }
@@ -259,22 +259,22 @@ interface RC {
     /**
      * 获取实例信息
      */
-    public getInfo(): InstanceInfo {
-      return {
-        instanceId: this.instanceId,
-        containerId: this.containerId,
-        isInitialized: this.isInitialized,
-        initTime: this.initTime,
-        eventListenerCount: Object.keys(this.eventListeners).length
-      };
-    }
+    // public getInfo(): InstanceInfo {
+    //   return {
+    //     instanceId: this.instanceId,
+    //     containerId: this.containerId,
+    //     isInitialized: this.isInitialized,
+    //     initTime: this.initTime,
+    //     eventListenerCount: Object.keys(this.eventListeners).length
+    //   };
+    // }
 
     /**
      * 检查是否已初始化
      */
-    public isReady(): boolean {
-      return this.isInitialized;
-    }
+    // public isReady(): boolean {
+    //   return this.isInitialized;
+    // }
     /**
      * 设置 postMessage 监听器
      */
@@ -342,11 +342,11 @@ interface RC {
     /**
      * 向iframe发送消息
      */
-    public sendMessageToIframe(message: any): void {
-      if (this.iframe?.contentWindow) {
-        this.iframe.contentWindow.postMessage(message, '*');
-      }
-    }
+    // public sendMessageToIframe(message: any): void {
+    //   if (this.iframe?.contentWindow) {
+    //     this.iframe.contentWindow.postMessage(message, '*');
+    //   }
+    // }
   }
 
   // 全局实例管理器
@@ -390,5 +390,7 @@ interface RC {
   };
 
 export default RC;
+export { RCInstance, RC, RC_EVENTS }
+
 
   

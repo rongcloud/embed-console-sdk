@@ -5,8 +5,8 @@ declare global {
     }
 }
 interface RCEvents {
-    EXPIRED: string;
-    INIT_ERROR: string;
+    EXPIRED: 'expired';
+    INIT_ERROR: 'initError';
 }
 interface RCEvent {
     type: string;
@@ -16,19 +16,13 @@ interface RCEvent {
     instanceId: string;
     data: any;
 }
-interface InstanceInfo {
-    instanceId: string;
-    containerId: string;
-    isInitialized: boolean;
-    initTime: number | null;
-    eventListenerCount: number;
-}
 interface RC {
     EVENTS: RCEvents;
     init: (containerId: string, accessToken: string, showMenu: boolean) => RCInstance;
     getEventNames: () => string[];
     getInstance: (instanceId: string) => RCInstance | null;
 }
+declare const RC_EVENTS: RCEvents;
 /**
  * RC 实例类
  */
@@ -79,11 +73,9 @@ declare class RCInstance {
     /**
      * 获取实例信息
      */
-    getInfo(): InstanceInfo;
     /**
      * 检查是否已初始化
      */
-    isReady(): boolean;
     /**
      * 设置 postMessage 监听器
      */
@@ -92,10 +84,7 @@ declare class RCInstance {
      * 处理来自iframe的消息
      */
     private handleIframeMessage;
-    /**
-     * 向iframe发送消息
-     */
-    sendMessageToIframe(message: any): void;
 }
 declare const RC: RC;
 export default RC;
+export { RCInstance, RC, RC_EVENTS };

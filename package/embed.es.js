@@ -108,21 +108,21 @@ class I {
   /**
    * 获取实例信息
    */
-  getInfo() {
-    return {
-      instanceId: this.instanceId,
-      containerId: this.containerId,
-      isInitialized: this.isInitialized,
-      initTime: this.initTime,
-      eventListenerCount: Object.keys(this.eventListeners).length
-    };
-  }
+  // public getInfo(): InstanceInfo {
+  //   return {
+  //     instanceId: this.instanceId,
+  //     containerId: this.containerId,
+  //     isInitialized: this.isInitialized,
+  //     initTime: this.initTime,
+  //     eventListenerCount: Object.keys(this.eventListeners).length
+  //   };
+  // }
   /**
    * 检查是否已初始化
    */
-  isReady() {
-    return this.isInitialized;
-  }
+  // public isReady(): boolean {
+  //   return this.isInitialized;
+  // }
   /**
    * 设置 postMessage 监听器
    */
@@ -164,9 +164,11 @@ class I {
   /**
    * 向iframe发送消息
    */
-  sendMessageToIframe(e) {
-    this.iframe?.contentWindow && this.iframe.contentWindow.postMessage(e, "*");
-  }
+  // public sendMessageToIframe(message: any): void {
+  //   if (this.iframe?.contentWindow) {
+  //     this.iframe.contentWindow.postMessage(message, '*');
+  //   }
+  // }
 }
 const c = window.RC_INSTANCES || {}, m = {
   // 事件名常量
@@ -197,5 +199,8 @@ const c = window.RC_INSTANCES || {}, m = {
   }
 };
 export {
+  m as RC,
+  I as RCInstance,
+  i as RC_EVENTS,
   m as default
 };
