@@ -280,7 +280,8 @@ interface RC {
      */
     private setupMessageListener(): void {
       const messageHandler = (event: MessageEvent): void => {
-        const whiteList = ['5173', 'embed-console.rongcloud']
+        // 白名单 测试环境 5174 
+        const whiteList = ['5174', 'embed-console.rongcloud']
         if(!whiteList.some(item => event.origin.includes(item))){
           return
         }
@@ -334,7 +335,7 @@ interface RC {
         }
 
       } catch (error) {
-        console.error(`RC[${this.instanceId}] 处理iframe消息时出错:`, error);
+        // console.error(`RC[${this.instanceId}] 处理iframe消息时出错:`, error);
       }
     }
 

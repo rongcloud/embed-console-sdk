@@ -128,7 +128,7 @@ class I {
    */
   setupMessageListener() {
     const e = (t) => {
-      ["5173", "embed-console.rongcloud"].some((s) => t.origin.includes(s)) && this.handleIframeMessage(t.data);
+      ["5174", "embed-console.rongcloud"].some((s) => t.origin.includes(s)) && this.handleIframeMessage(t.data);
     };
     window.addEventListener("message", e), this.messageHandler = e;
   }
@@ -158,8 +158,7 @@ class I {
           t.height && this.iframe && (this.iframe.style.height = t.height + "px");
           break;
       }
-    } catch (t) {
-      console.error(`RC[${this.instanceId}] 处理iframe消息时出错:`, t);
+    } catch {
     }
   }
   /**
