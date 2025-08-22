@@ -18,7 +18,7 @@ npm install @rongcloud/embed-console-sdk
 import RC from '@rongcloud/embed-console-sdk';
 
 // UMD (通过 script 标签引入)
-<script src="https://cdn.ronghub.com/embed/console/embed.umd.js"></script>
+<script src="https://cdn.ronghub.com/embed/console/embed-v0.0.1.js"></script>
 // 全局变量 RC 可用
 ```
 
